@@ -1,6 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import localFont from "next/font/local";
+
+// Load the local font file
+const circular = localFont({
+  src: "../../public/fonts/CircularStd-Medium.woff", // Ensure this path matches your file!
+  variable: "--font-circular",
+});
 
 export default function SplitText({
   text,
@@ -9,31 +16,43 @@ export default function SplitText({
   text: string;
   delay?: number;
 }) {
-  // Split the text into an array of characters, keeping spaces intact
-  const characters = text.split(/(?!$)/u);
+  // Split by word
+  const words = text.split(" ");
+
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.1, delayChildren: delay },
+    },
+  };
+
+  const wordVariants = {
+    hidden: { y: "120%" },
+    visible: {
+      y: 0,
+      transition: { duration: 1.2, ease: [0.19, 1.0, 0.22, 1.0] },
+    },
+  };
 
   return (
-    // inline-flex ensures the container tightly wraps the text height without collapsing
-    // pb-2 and -mb-2 prevent the overflow from clipping descenders (like 'y' or 'g')
-    <span className="inline-flex overflow-hidden pb-2 -mb-2">
-      {characters.map((char, index) => (
-        <motion.span
-          key={index}
-          className="inline-block"
-          initial={{ y: "120%" }} // Pushed slightly further down to guarantee it's hidden
-          whileInView={{ y: 0 }}
-          viewport={{ once: true, margin: "0px" }}
-          transition={{
-            duration: 1.2,
-            // Framer Motion heavily prefers bezier arrays over custom math functions for DOM transforms.
-            // This array is the exact mathematical equivalent of ExpoOut.
-            ease: [0.19, 1.0, 0.22, 1.0],
-            delay: delay + index * 0.03, // Slightly slower stagger for a more elegant reveal
-          }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
+    // Applied Circular Std and massive editorial sizing
+    <motion.span
+      className={`${circular.className} inline-flex flex-wrap justify-center overflow-hidden pb-4 -mb-4 text-[4rem] md:text-[8rem] lg:text-[11rem] leading-[0.85] tracking-tight`}
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "100px" }}
+    >
+      {words.map((word, index) => (
+        <span key={index} className="inline-flex overflow-hidden">
+          <motion.span
+            variants={wordVariants}
+            className="inline-block mr-[0.25em]" // Space between words
+          >
+            {word}
+          </motion.span>
+        </span>
       ))}
-    </span>
+    </motion.span>
   );
 }
