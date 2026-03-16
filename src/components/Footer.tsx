@@ -1,9 +1,8 @@
 export default function Footer() {
   return (
-    // Fixed height of 600px for desktop to accommodate the layout
-    <footer className="fixed bottom-0 left-0 w-full h-[600px] bg-[#222222] text-white z-0 flex flex-col justify-between pt-20">
+    <footer className="w-full bg-[#222222] text-white flex flex-col justify-between pt-20">
       {/* TOP SECTION: Logo & CTA */}
-      <div className="flex justify-between items-start px-12 md:px-20">
+      <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-20 gap-10 md:gap-0">
         <h2 className="text-3xl font-bold tracking-tight">B/D®</h2>
         <div className="max-w-xl text-3xl md:text-4xl font-medium leading-tight">
           <p>We collaborate with ambitious brands and people. Let's build.</p>
@@ -17,9 +16,9 @@ export default function Footer() {
       </div>
 
       {/* MIDDLE SECTION: Grid Links */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-12 md:px-20 mt-20 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 px-8 md:px-20 mt-20 mb-16">
         {/* Newsletter Column */}
-        <div className="md:col-span-4 pr-12">
+        <div className="md:col-span-4 pr-0 md:pr-12">
           <div className="flex items-center gap-3 text-sm font-semibold tracking-wider mb-8 uppercase">
             <span className="w-2 h-2 rounded-full bg-white"></span>
             Stay in the know
@@ -127,20 +126,18 @@ export default function Footer() {
       </div>
 
       {/* BOTTOM SUB-FOOTER */}
-      <div className="bg-[#1a1a1a] flex flex-col md:flex-row justify-between items-center px-12 md:px-20 py-6 text-xs text-neutral-500 font-medium">
-        <div className="flex items-center gap-4">
+      <div className="bg-[#1a1a1a] flex flex-col md:flex-row justify-between items-center px-8 md:px-20 py-6 text-xs text-neutral-500 font-medium text-center md:text-left gap-4 md:gap-0">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           {/* Accessibility Icon Placeholder */}
-          <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white shrink-0">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z" />
             </svg>
           </div>
           <p>BASIC/DEPT®, INC 10 - 26©</p>
         </div>
-        <p className="mt-4 md:mt-0">
-          EASY TO UNDERSTAND, IMPOSSIBLE TO IGNORE.™
-        </p>
-        <p className="mt-4 md:mt-0">TERMS, PRIVACY POLICY</p>
+        <p>EASY TO UNDERSTAND, IMPOSSIBLE TO IGNORE.™</p>
+        <p>TERMS, PRIVACY POLICY</p>
       </div>
     </footer>
   );

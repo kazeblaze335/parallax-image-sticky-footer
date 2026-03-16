@@ -5,26 +5,27 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-// The actual 3D object
 function FloatingGeometry() {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // Slowly rotate the geometry on every frame
+  // Continuously and smoothly rotate the geometry, independent of frame rate
   useFrame((state, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.x += delta * 0.2;
-      meshRef.current.rotation.y += delta * 0.3;
+      meshRef.current.rotation.x += delta * 0.15;
+      meshRef.current.rotation.y += delta * 0.2;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={1} floatIntensity={2}>
-      <mesh ref={meshRef}>
+    // We brought back a slight rotationIntensity to the Float component
+    // to give it a bit more natural drift since the mouse isn't driving it.
+    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={1}>
+      <mesh ref={meshRef} scale={[1.2, 1.2, 1.2]}>
         <torusKnotGeometry args={[1.5, 0.4, 128, 16]} />
         <meshStandardMaterial
           color="#ffffff"
           wireframe={true}
-          transparent
+          transparent={true}
           opacity={0.3}
         />
       </mesh>
@@ -32,14 +33,16 @@ function FloatingGeometry() {
   );
 }
 
-// The Canvas container
 export default function WebGLOverlay() {
   return (
-    // pointer-events-none ensures the 3D canvas doesn't block scroll or clicks
+    // pointer-events-none ensures the canvas never intercepts scroll or clicks
     <div className="absolute inset-0 z-20 pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+      <Canvas
+        camera={{ position: [0, 0, 6], fov: 40 }}
+        className="pointer-events-none"
+      >
         <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <directionalLight position={[10, 10, 5]} intensity={1.2} />
         <FloatingGeometry />
         <Environment preset="city" />
       </Canvas>
