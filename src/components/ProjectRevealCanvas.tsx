@@ -6,7 +6,6 @@ import { shaderMaterial, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { lerp } from "@/utils/math";
 
-// 1. The Custom Transition Shader
 const RevealMaterial = shaderMaterial(
   {
     uHoverState: 0,
@@ -27,14 +26,10 @@ const RevealMaterial = shaderMaterial(
     varying vec2 vUv;
 
     void main() {
-      // Zoom out slightly when hidden, pull in when revealed
       vec2 uv = (vUv - 0.5) * (1.0 - uHoverState * 0.05) + 0.5;
-      
-      // Subtle liquid wave
       float wave = sin(uv.y * 10.0 + uTime * 2.0) * 0.005 * uHoverState;
       uv.x += wave;
 
-      // RGB Split on transition
       float r = texture2D(uTexture, uv + vec2(0.015 * (1.0 - uHoverState), 0.0)).r;
       float g = texture2D(uTexture, uv).g;
       float b = texture2D(uTexture, uv - vec2(0.015 * (1.0 - uHoverState), 0.0)).b;
@@ -68,8 +63,8 @@ function RevealImage({
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const targetHover = useRef(0);
 
-  // Provide a fallback to prevent React Suspense from crashing the canvas
-  const texture = useTexture(activeImage || "/test-image-1.jpg");
+  // Updated fallback to the new directory structure
+  const texture = useTexture(activeImage || "/images/project-1.jpg");
 
   useEffect(() => {
     targetHover.current = activeImage ? 1 : 0;
@@ -77,7 +72,6 @@ function RevealImage({
 
   useFrame((state, delta) => {
     if (materialRef.current && meshRef.current) {
-      // Lerp Opacity/RGB Split
       materialRef.current.uniforms.uHoverState.value = lerp(
         materialRef.current.uniforms.uHoverState.value,
         targetHover.current,
@@ -86,7 +80,6 @@ function RevealImage({
 
       materialRef.current.uniforms.uTime.value += delta;
 
-      // Subtle mouse tracking for parallax depth
       const targetX = state.pointer.x * state.viewport.width * 0.05;
       const targetY = state.pointer.y * state.viewport.height * 0.05;
 
@@ -101,8 +94,6 @@ function RevealImage({
         0.1,
       );
 
-      // Handle Fullscreen Expansion on Click
-      // Base size is a wide rectangle [10, 5.5]. Expanded size fills the viewport.
       const targetWidth = isExpanding ? state.viewport.width : 10;
       const targetHeight = isExpanding ? state.viewport.height : 5.5;
 
