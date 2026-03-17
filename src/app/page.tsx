@@ -19,6 +19,13 @@ export default function Home() {
 
   // 1. Initialize Lenis Smooth Scroll
   useEffect(() => {
+    // 1a. Tell the browser NOT to restore scroll position natively
+    if (typeof window !== "undefined") {
+      window.history.scrollRestoration = "manual";
+    }
+    // 1b. Force the page to the absolute top on mount
+    window.scrollTo(0, 0);
+
     const lenis = new Lenis();
     lenisRef.current = lenis;
 

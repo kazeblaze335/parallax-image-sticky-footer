@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 
 // Load the local font file
 const circular = localFont({
-  src: "../../public/fonts/CircularStd-Medium.woff", // Ensure this path matches your file!
+  src: "../../public/fonts/NBInternational.woff2",
   variable: "--font-circular",
 });
 
@@ -41,7 +41,8 @@ export default function SplitText({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "100px" }}
+      // Wait to animate until the element crosses into the viewport
+      viewport={{ once: true, margin: "-100px" }}
     >
       {words.map((word, index) => (
         <span key={index} className="inline-flex overflow-hidden">
