@@ -1,59 +1,65 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import localFont from "next/font/local";
 
-// Load the local font file
+// 1. The Circular font set up correctly within the file
 const circular = localFont({
-  src: "../../public/fonts/NBInternational.woff2",
+  src: "../../public/fonts/CircularStd-Medium.woff",
   variable: "--font-circular",
 });
+
+interface SplitTextProps {
+  text: string;
+  delay?: number;
+  className?: string;
+}
 
 export default function SplitText({
   text,
   delay = 0,
-}: {
-  text: string;
-  delay?: number;
-}) {
-  // Split by word
+  className = "",
+}: SplitTextProps) {
   const words = text.split(" ");
 
-  const containerVariants = {
+  // 2. Explicitly typed as Variants to fix the TS inference error
+  const containerVariants: Variants = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.1, delayChildren: delay },
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: delay,
+      },
     },
   };
 
-  const wordVariants = {
-    hidden: { y: "120%" },
+  const wordVariants: Variants = {
+    hidden: {
+      y: "100%",
+    },
     visible: {
       y: 0,
-      transition: { duration: 1.2, ease: [0.19, 1.0, 0.22, 1.0] },
+      transition: {
+        duration: 0.5,
+        ease: [0.33, 1, 0.68, 1],
+      },
     },
   };
 
   return (
-    // Applied Circular Std and massive editorial sizing
-    <motion.span
-      className={`${circular.className} inline-flex flex-wrap justify-center overflow-hidden pb-4 -mb-4 text-[4rem] md:text-[8rem] lg:text-[11rem] leading-[0.85] tracking-tight`}
+    <motion.div
+      // 3. Oversize typography applied alongside the Circular font class
+      className={`flex flex-wrap justify-center gap-[0.25em] text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight ${circular.className} ${className}`}
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      // Wait to animate until the element crosses into the viewport
       viewport={{ once: true, margin: "-100px" }}
     >
       {words.map((word, index) => (
-        <span key={index} className="inline-flex overflow-hidden">
-          <motion.span
-            variants={wordVariants}
-            className="inline-block mr-[0.25em]" // Space between words
-          >
-            {word}
-          </motion.span>
+        <span key={index} className="inline-flex overflow-hidden pb-1">
+          <motion.span variants={wordVariants}>{word}</motion.span>
         </span>
       ))}
-    </motion.span>
+    </motion.div>
   );
 }

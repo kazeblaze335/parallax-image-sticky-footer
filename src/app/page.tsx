@@ -17,13 +17,10 @@ export default function Home() {
   const footerRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
 
-  // 1. Initialize Lenis Smooth Scroll
   useEffect(() => {
-    // 1a. Tell the browser NOT to restore scroll position natively
     if (typeof window !== "undefined") {
       window.history.scrollRestoration = "manual";
     }
-    // 1b. Force the page to the absolute top on mount
     window.scrollTo(0, 0);
 
     const lenis = new Lenis();
@@ -40,7 +37,6 @@ export default function Home() {
     };
   }, []);
 
-  // 2. Lock Scroll During Preloader
   useEffect(() => {
     if (isLoading) {
       lenisRef.current?.stop();
@@ -49,7 +45,6 @@ export default function Home() {
     }
   }, [isLoading]);
 
-  // 3. Dynamically Measure Footer for Sticky Reveal
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -66,42 +61,46 @@ export default function Home() {
 
   return (
     <>
-      <FilmGrain /> {/* The global TV static layer */}
-      {/* The frosted glass preloader */}
+      <FilmGrain />
       <AnimatePresence mode="wait">
         {isLoading && <Preloader key="preloader" setLoading={setIsLoading} />}
       </AnimatePresence>
+
       <main className="relative">
         <Navbar />
 
-        {/* MAIN CONTENT WRAPPER */}
         <div
           className="relative z-10 bg-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           style={{ marginBottom: `${footerHeight}px` }}
         >
-          {/* Interactive WebGL Header Section */}
-          <HeroProjects />
-
-          {/* Transitional Spacing Section */}
-          <div className="h-[40vh] flex flex-col items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
+          {/* 1. Intro Typography */}
+          <div className="h-[40vh] flex flex-col items-center justify-center pt-32 text-zinc-900 px-8 text-center bg-zinc-100">
             <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400">
               The Archive
             </p>
           </div>
 
-          {/* First Parallax: Full Screen background with augmented depth */}
+          {/* 2. Seamless Spatial Depth (FIXED SYNC) */}
+          <div className="h-[60vh] flex items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
+            {/* We wait for isLoading to be false. 
+                Then we add a 0.6s delay so the preloader has time to slide up and reveal the animation happening! */}
+            {!isLoading && (
+              <SplitText text="Seamless spatial depth." delay={0.6} />
+            )}
+          </div>
+
+          {/* 3. First Parallax: Full Screen background with EXTREME DEPTH */}
           <ParallaxImage
             src="/images/parallax-1.jpg"
             alt="Full screen background"
             className="h-screen w-full"
+            lgParallax={true}
           />
 
-          {/* Spacing Section */}
-          <div className="h-[60vh] flex items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
-            <SplitText text="Seamless spatial depth." delay={0.1} />
-          </div>
+          {/* 4. Interactive WebGL Accordion Section */}
+          <HeroProjects />
 
-          {/* Second Section: Augmented Parallax Window */}
+          {/* 5. Second Parallax Window (Standard Depth) */}
           <div className="py-20 flex justify-center bg-zinc-200">
             <ParallaxImage
               src="/images/parallax-2.jpg"
@@ -110,7 +109,7 @@ export default function Home() {
             />
           </div>
 
-          {/* Final Section before Footer */}
+          {/* 6. Final Section before Footer */}
           <div className="h-[60vh] flex flex-col items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
             <SplitText text="Keep Scrolling" />
             <p className="mt-8 text-xl font-medium tracking-widest uppercase text-zinc-500">
