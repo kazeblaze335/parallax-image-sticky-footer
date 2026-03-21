@@ -2,41 +2,32 @@
 
 import Link from "next/link";
 
-export default function NavBar() {
+export default function Navbar() {
   return (
-    // Fixed to the top, pointer-events-none on the wrapper ensures it doesn't block clicks below it
-    <header className="fixed top-0 left-0 w-full z-50 p-8 flex justify-between items-center pointer-events-none">
-      {/* Logo */}
-      <div className="pointer-events-auto">
-        <Link
-          href="/"
-          className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 hover:text-zinc-900 transition-colors duration-300"
-        >
-          NØRD OBJECTS
-        </Link>
-      </div>
+    <nav className="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center mix-blend-difference text-zinc-100">
+      {/* Logo pointing back to Home */}
+      <Link
+        href="/"
+        className="text-xs font-bold tracking-[0.2em] uppercase hover:opacity-50 transition-opacity"
+      >
+        NØRD OBJECTS
+      </Link>
 
       {/* Navigation Links */}
-      <nav className="pointer-events-auto flex gap-8">
-        <Link
-          href="/"
-          className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 hover:text-zinc-900 transition-colors duration-300"
-        >
+      <div className="flex gap-8 text-xs font-bold tracking-[0.2em] uppercase">
+        <Link href="/" className="hover:opacity-50 transition-opacity">
           Home
         </Link>
-        <Link
-          href="/projects"
-          className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 hover:text-zinc-900 transition-colors duration-300"
-        >
+
+        {/* The freshly wired Projects link! */}
+        <Link href="/work" className="hover:opacity-50 transition-opacity">
           Projects
         </Link>
-        <Link
-          href="/about"
-          className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 hover:text-zinc-900 transition-colors duration-300"
-        >
+
+        <Link href="/about" className="hover:opacity-50 transition-opacity">
           About Us
         </Link>
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }

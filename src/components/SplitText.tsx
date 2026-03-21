@@ -3,21 +3,24 @@
 import { motion, Variants } from "framer-motion";
 import localFont from "next/font/local";
 
-const nbInternational = localFont({
-  src: "../../public/fonts/NBInternational-Regular.woff2",
-  variable: "--font-nb",
+const neueMontreal = localFont({
+  src: "../../public/fonts/PPNeueMontreal-Bold.otf",
+  variable: "--font-neue",
 });
 
 interface SplitTextProps {
   text: string;
   delay?: number;
   className?: string;
+  playOnce?: boolean; // NEW: Added a prop to lock the animation
 }
 
+// Added playOnce to the destructured props
 export default function SplitText({
   text,
   delay = 0,
   className = "",
+  playOnce = false,
 }: SplitTextProps) {
   const words = text.split(" ");
 
@@ -33,7 +36,7 @@ export default function SplitText({
 
   const wordVariants: Variants = {
     hidden: {
-      y: "130%", // Pushed from 100% to 130% to completely hide the massive text!
+      y: "130%",
     },
     visible: {
       y: 0,
@@ -46,11 +49,17 @@ export default function SplitText({
 
   return (
     <motion.div
-      className={`flex flex-wrap justify-center gap-[0.25em] text-[10vw] md:text-[8vw] leading-[0.85] tracking-tight uppercase ${nbInternational.className} ${className}`}
+      className={`flex flex-wrap justify-center gap-[0.25em] text-[10vw] md:text-[8vw] leading-[0.85] tracking-tight uppercase ${neueMontreal.className} ${className}`}
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      // THE FIX: If playOnce is true, it locks permanently.
+      // If false, it uses our infinite-margin reset trick!
+      viewport={
+        playOnce
+          ? { once: true, margin: "-100px" }
+          : { once: false, margin: "10000px 0px -100px 0px" }
+      }
     >
       {words.map((word, index) => (
         <span key={index} className="inline-flex overflow-hidden pb-2 md:pb-4">

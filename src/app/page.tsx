@@ -103,9 +103,10 @@ export default function Home() {
             />
           </div>
 
-          {/* 2. Second Oversize NB International Text */}
-          <div className="h-[60vh] flex flex-col items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
-            <SplitText text="KEEP SCROLLING" />
+          {/* 2. Second Oversize Text (Fixed Height & Locked Animation) */}
+          <div className="h-screen flex flex-col items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
+            {/* Passed the playOnce prop here! */}
+            <SplitText text="KEEP SCROLLING" playOnce={true} />
             <p className="mt-8 text-xl font-medium tracking-widest uppercase text-zinc-500">
               The sticky footer awaits.
             </p>

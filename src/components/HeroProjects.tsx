@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link"; // NEW: Imported Next.js Link for pre-fetching
 import localFont from "next/font/local";
 import { motion, AnimatePresence } from "framer-motion";
 import WavyRowCanvas from "./WavyRowCanvas";
@@ -81,17 +81,11 @@ const PROJECTS = [
 ];
 
 export default function HeroProjects() {
-  const router = useRouter();
   const [openSlug, setOpenSlug] = useState<string | null>(null);
 
   const handleRowClick = (slug: string) => {
     // Toggle accordion logic
     setOpenSlug(openSlug === slug ? null : slug);
-  };
-
-  const handleProjectRoute = (e: React.MouseEvent, slug: string) => {
-    e.stopPropagation();
-    router.push(`/work/${slug}`);
   };
 
   return (
@@ -116,7 +110,6 @@ export default function HeroProjects() {
               project={project}
               isOpen={isOpen}
               onToggle={() => handleRowClick(project.slug)}
-              onRoute={(e) => handleProjectRoute(e, project.slug)}
             />
           );
         })}
@@ -130,12 +123,10 @@ function ProjectRow({
   project,
   isOpen,
   onToggle,
-  onRoute,
 }: {
   project: (typeof PROJECTS)[0];
   isOpen: boolean;
   onToggle: () => void;
-  onRoute: (e: React.MouseEvent) => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -166,7 +157,7 @@ function ProjectRow({
         </div>
       </div>
 
-      {/* 4. The Accordion Reveal (Matches Screenshot Layout) */}
+      {/* 4. The Accordion Reveal */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
@@ -178,13 +169,12 @@ function ProjectRow({
           >
             {/* Split layout inside the accordion */}
             <div className="pb-12 pt-4 flex gap-8 h-[400px]">
-              {/* Left Column: The WebGL Image Canvas (Now contained!) */}
+              {/* Left Column: The WebGL Image Canvas */}
               <div className="relative w-[45%] h-full rounded-lg overflow-hidden bg-zinc-200">
-                {/* The canvas sits cleanly inside this specific div now */}
                 <WavyRowCanvas
                   activeImage={project.src}
                   isHovered={isHovered || isOpen}
-                  isExpanding={false} // We removed the full-screen expansion for this layout
+                  isExpanding={false}
                 />
               </div>
 
@@ -216,12 +206,15 @@ function ProjectRow({
                     {project.details}
                   </p>
 
-                  <button
-                    onClick={onRoute}
+                  {/* NEW: Replaced button with Next.js Link */}
+                  <Link
+                    href={`/work/${project.slug}`}
                     className="inline-block border-b border-zinc-900 pb-1 text-xs font-bold tracking-[0.2em] uppercase text-zinc-900 hover:opacity-50 transition-opacity"
+                    // Stop propagation so clicking the link doesn't also close the accordion!
+                    onClick={(e) => e.stopPropagation()}
                   >
                     View Case Study
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
