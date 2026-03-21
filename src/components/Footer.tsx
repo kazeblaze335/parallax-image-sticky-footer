@@ -1,64 +1,66 @@
 "use client";
 
 import localFont from "next/font/local";
+import Link from "next/link";
 
-const circular = localFont({
-  src: "../../public/fonts/CircularStd-Medium.woff",
-  variable: "--font-circular",
+const neueMontreal = localFont({
+  src: "../../public/fonts/PPNeueMontreal-Bold.otf",
+  variable: "--font-neue",
 });
-
-const experimentNumber = "Experiment 503";
-const vimeoCredits = "Video credits Codegrid";
-
-const footerData = [
-  { title: "LinkedIn", href: "#" },
-  { title: "Vimeo", href: "#" },
-  { title: "Instagram", href: "#" },
-  { title: "Twitter", href: "#" },
-  { title: "Contact Us", href: "#" },
-  { title: "NØRD Objects © 2023", href: null },
-  { title: "Privacy Policy", href: "#" },
-];
 
 export default function Footer() {
   return (
-    // RESTORED overflow-hidden here! The h-screen height will prevent the visual clipping you were worried about.
-    <footer
-      className={`relative w-full h-screen bg-zinc-100 p-10 pb-6 text-zinc-900 border-t border-zinc-200 overflow-hidden ${circular.className}`}
-    >
-      {/* 1. THE MASSIVE NEON TYPOGRAPHY (SOJU®) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none origin-center -rotate-90">
-        <h2 className="text-[18vh] md:text-[28vh] font-black uppercase tracking-tighter text-[#ccff00] leading-none whitespace-nowrap drop-shadow-sm">
-          SOJU®
-        </h2>
+    // ADDED: dark:bg-zinc-900
+    <footer className="h-screen w-full flex flex-col items-center justify-between overflow-hidden bg-zinc-200 dark:bg-zinc-900 pt-32 pb-12 transition-colors duration-500">
+      {/* Top Info Grid */}
+      {/* ADDED: dark:text-zinc-400 */}
+      <div className="w-full px-8 md:px-16 flex justify-between items-start text-xs font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
+        <div className="flex flex-col gap-2">
+          <p>NØRD OBJECTS</p>
+          <p>Creative Studio</p>
+        </div>
+        <div className="flex flex-col gap-2 text-right">
+          <Link
+            href="mailto:hello@nordobjects.com"
+            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            hello@nordobjects.com
+          </Link>
+          <p>San Francisco, CA</p>
+        </div>
       </div>
 
-      {/* 2. THE BOTTOM ROW */}
-      <div className="relative z-10 flex h-full items-end justify-between uppercase text-xs font-bold tracking-[0.2em] text-zinc-400">
-        <div className="w-[30%]">
-          <ul className="space-y-2 pointer-events-auto">
-            {footerData.map((link, index) => (
-              <li key={index}>
-                {link.href ? (
-                  <a
-                    href={link.href}
-                    className="text-zinc-900 hover:text-zinc-500 transition-colors"
-                  >
-                    {link.title}
-                  </a>
-                ) : (
-                  <span className="text-zinc-500 font-medium">
-                    {link.title}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* The Massive SOJU Graphic */}
+      {/* ADDED: dark:text-zinc-100 */}
+      <div
+        className={`text-[25vw] leading-[0.75] tracking-tighter uppercase text-zinc-900 dark:text-zinc-100 transition-colors duration-500 ${neueMontreal.className}`}
+      >
+        SOJU<span className="text-[10vw] align-top relative top-4">®</span>
+      </div>
 
-        <div className="w-[30%] text-right text-zinc-900">
-          <p className="font-bold tracking-[0.2em]">{experimentNumber}</p>
-          <p className="font-bold tracking-[0.2em]">{vimeoCredits}</p>
+      {/* Bottom Copyright & Socials */}
+      {/* ADDED: dark:text-zinc-400 */}
+      <div className="w-full px-8 md:px-16 flex justify-between items-end text-xs font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
+        <p>© 2026</p>
+        <div className="flex gap-6">
+          <Link
+            href="#"
+            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            Instagram
+          </Link>
+          <Link
+            href="#"
+            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            Twitter
+          </Link>
+          <Link
+            href="#"
+            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          >
+            LinkedIn
+          </Link>
         </div>
       </div>
     </footer>

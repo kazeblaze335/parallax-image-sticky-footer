@@ -1,28 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import Lenis from "@studio-freight/lenis";
-import HeroProjects from "@/components/HeroProjects";
-import ParallaxImage from "@/components/ParallaxImage";
 import Navbar from "@/components/NavBar";
+import HeroProjects from "@/components/HeroProjects";
 import Footer from "@/components/Footer";
-import SplitText from "@/components/SplitText";
-import Preloader from "@/components/Preloader";
 import FilmGrain from "@/components/FilmGrain";
+import SplitText from "@/components/SplitText";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const lenisRef = useRef<Lenis | null>(null);
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.history.scrollRestoration = "manual";
-    }
     window.scrollTo(0, 0);
-
     const lenis = new Lenis();
     lenisRef.current = lenis;
 
@@ -32,18 +24,8 @@ export default function Home() {
     }
     requestAnimationFrame(raf);
 
-    return () => {
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
-
-  useEffect(() => {
-    if (isLoading) {
-      lenisRef.current?.stop();
-    } else {
-      lenisRef.current?.start();
-    }
-  }, [isLoading]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
@@ -51,68 +33,47 @@ export default function Home() {
         setFooterHeight(entry.contentRect.height);
       }
     });
-
-    if (footerRef.current) {
-      resizeObserver.observe(footerRef.current);
-    }
-
+    if (footerRef.current) resizeObserver.observe(footerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
 
   return (
     <>
       <FilmGrain />
-      <AnimatePresence mode="wait">
-        {isLoading && <Preloader key="preloader" setLoading={setIsLoading} />}
-      </AnimatePresence>
-
-      <main className="relative">
+      {/* ADDED: dark:bg-zinc-950 and dark:text-zinc-100 */}
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
+        {/* This wrapper slides up over the fixed footer */}
         <div
-          className="relative z-10 bg-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          className="relative z-10 bg-zinc-100 dark:bg-zinc-950 transition-colors duration-500"
           style={{ marginBottom: `${footerHeight}px` }}
         >
-          <div className="h-[40vh] flex flex-col items-center justify-center pt-32 text-zinc-900 px-8 text-center bg-zinc-100">
-            <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400">
+          {/* 1. THE HERO SECTION */}
+          <div className="min-h-screen flex flex-col items-center justify-center pt-32 pb-16">
+            {/* ADDED: dark:text-zinc-400 */}
+            <p className="mb-8 text-sm font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
               The Archive
             </p>
+            <SplitText text="Seamless Spatial" />
+            <SplitText text="Depth." delay={0.2} />
           </div>
 
-          {/* 1. First Oversize NB International Text */}
-          <div className="h-[60vh] flex items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
-            {!isLoading && (
-              <SplitText text="SEAMLESS SPATIAL DEPTH." delay={0.6} />
-            )}
-          </div>
-
-          <ParallaxImage
-            src="/images/parallax-1.jpg"
-            alt="Full screen background"
-            className="h-screen w-full"
-            lgParallax={true}
-          />
-
+          {/* 2. THE ACCORDION COMPONENT */}
           <HeroProjects />
 
-          <div className="py-20 flex justify-center bg-zinc-200">
-            <ParallaxImage
-              src="/images/parallax-2.jpg"
-              alt="Mid-page feature"
-              className="h-[60vh] w-[90%] md:w-[70%] rounded-2xl shadow-2xl"
-            />
-          </div>
-
-          {/* 2. Second Oversize Text (Fixed Height & Locked Animation) */}
-          <div className="h-screen flex flex-col items-center justify-center text-zinc-900 px-8 text-center bg-zinc-100">
-            {/* Passed the playOnce prop here! */}
-            <SplitText text="KEEP SCROLLING" playOnce={true} />
-            <p className="mt-8 text-xl font-medium tracking-widest uppercase text-zinc-500">
+          {/* 3. THE SECOND OVERSIZE TEXT */}
+          {/* ADDED: dark:bg-zinc-950 */}
+          <div className="h-screen flex flex-col items-center justify-center px-8 text-center bg-zinc-100 dark:bg-zinc-950 transition-colors duration-500">
+            <SplitText text="Keep Scrolling" playOnce={true} />
+            {/* ADDED: dark:text-zinc-400 */}
+            <p className="mt-8 text-xl font-medium tracking-widest uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
               The sticky footer awaits.
             </p>
           </div>
         </div>
 
+        {/* THE FOOTER WRAPPER */}
         <div ref={footerRef} className="fixed bottom-0 left-0 w-full z-0">
           <Footer />
         </div>

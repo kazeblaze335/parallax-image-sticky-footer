@@ -47,9 +47,6 @@ export default function ProjectPage() {
 
   const scrollY = useMotionValue(0);
 
-  // =======================================================
-  // HEAVY PARALLAX MATH
-  // =======================================================
   const col1Y = useTransform(scrollY, [0, 3000], [0, -2000]);
   const col2Y = useTransform(scrollY, [0, 3000], [0, -800]);
   const interiorY = useTransform(scrollY, [0, 3000], [-250, 250]);
@@ -82,37 +79,37 @@ export default function ProjectPage() {
   return (
     <>
       <FilmGrain />
-      <main className="relative bg-zinc-100 min-h-screen text-zinc-900 overflow-clip">
+      {/* ADDED: dark:bg-zinc-950 dark:text-zinc-100 */}
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
-        {/* =======================================================
-            THE Z-INDEX MASKING WALL
-            Added relative, z-10, and bg-zinc-100 here so the 
-            columns slide flawlessly underneath this section!
-            ======================================================= */}
-        <div className="relative z-10 bg-zinc-100 pt-40 px-8 md:px-16 pb-20">
+        {/* ADDED: dark:bg-zinc-950 to the Masking Wall */}
+        <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-40 px-8 md:px-16 pb-20 transition-colors duration-500">
           <SplitText
             text={data.title}
             delay={0.2}
             className={`!text-[12vw] md:!text-[9vw] leading-[0.85] tracking-tight uppercase ${neueMontreal.className}`}
           />
 
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 border-t border-zinc-300 pt-10">
+          {/* ADDED: dark:border-zinc-800 */}
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 border-t border-zinc-300 dark:border-zinc-800 pt-10 transition-colors duration-500">
             <div className="space-y-2">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500">
                 Client
               </p>
               <p className="text-lg font-medium">{data.client}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500">
                 Role & Stack
               </p>
               <p className="text-lg font-medium">{data.role}</p>
-              <p className="text-sm text-zinc-500">{data.stack}</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {data.stack}
+              </p>
             </div>
             <div className="space-y-2 md:pl-10">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500">
                 The Brief
               </p>
               <p className="text-md leading-relaxed font-medium">
@@ -122,12 +119,8 @@ export default function ProjectPage() {
           </div>
         </div>
 
-        {/* =======================================================
-            THE PARALLAX GALLERY
-            Removed overflow-hidden so the math doesn't break!
-            ======================================================= */}
-        <div className="relative w-full bg-zinc-200 flex justify-center gap-4 md:gap-10 py-32 md:py-64 border-t border-zinc-300">
-          {/* Column 1 */}
+        {/* ADDED: dark:bg-zinc-900 and dark:border-zinc-800 to the Gallery */}
+        <div className="relative w-full bg-zinc-200 dark:bg-zinc-900 flex justify-center gap-4 md:gap-10 py-32 md:py-64 border-t border-zinc-300 dark:border-zinc-800 transition-colors duration-500">
           <motion.div
             style={{ y: col1Y }}
             className="flex flex-col gap-10 w-[90%] md:w-[40%]"
@@ -135,7 +128,7 @@ export default function ProjectPage() {
             {data.images.map((src: string, index: number) => (
               <div
                 key={`col1-${index}`}
-                className="relative w-full h-[50vh] md:h-[80vh] shrink-0 overflow-hidden rounded-xl shadow-lg"
+                className="relative w-full h-[50vh] md:h-[80vh] shrink-0 overflow-hidden rounded-xl shadow-lg bg-zinc-300 dark:bg-zinc-800"
               >
                 <motion.div
                   style={{ y: interiorY }}
@@ -152,7 +145,6 @@ export default function ProjectPage() {
             ))}
           </motion.div>
 
-          {/* Column 2 */}
           <motion.div
             style={{ y: col2Y }}
             className="hidden md:flex flex-col gap-10 w-[40%]"
@@ -160,7 +152,7 @@ export default function ProjectPage() {
             {[...data.images].reverse().map((src: string, index: number) => (
               <div
                 key={`col2-${index}`}
-                className="relative w-full h-[60vh] md:h-[90vh] shrink-0 overflow-hidden rounded-xl shadow-lg"
+                className="relative w-full h-[60vh] md:h-[90vh] shrink-0 overflow-hidden rounded-xl shadow-lg bg-zinc-300 dark:bg-zinc-800"
               >
                 <motion.div
                   style={{ y: interiorY }}

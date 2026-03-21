@@ -16,7 +16,6 @@ const neueMontreal = localFont({
   variable: "--font-neue",
 });
 
-// Reusing your project data
 const PROJECTS = [
   {
     name: "Native Instruments",
@@ -81,7 +80,6 @@ export default function WorkGallery() {
     return () => lenis.destroy();
   }, []);
 
-  // Sticky footer calculation
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -95,11 +93,13 @@ export default function WorkGallery() {
   return (
     <>
       <FilmGrain />
-      <main className="relative bg-zinc-100 min-h-screen text-zinc-900 overflow-clip">
+      {/* ADDED: dark:bg-zinc-950 and dark:text-zinc-100 */}
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
+        {/* ADDED: dark:bg-zinc-950 */}
         <div
-          className="relative z-10 bg-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          className="relative z-10 bg-zinc-100 dark:bg-zinc-950 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-500"
           style={{ marginBottom: `${footerHeight}px` }}
         >
           {/* Header */}
@@ -115,7 +115,6 @@ export default function WorkGallery() {
           <div className="px-8 md:px-16 pb-32 max-w-[1800px] mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
               {PROJECTS.map((project, index) => {
-                // Stagger every even item on desktop
                 const isEven = index % 2 !== 0;
 
                 return (
@@ -128,7 +127,8 @@ export default function WorkGallery() {
                     className={`flex flex-col group ${isEven ? "md:mt-32" : ""}`}
                   >
                     <Link href={`/work/${project.slug}`} className="w-full">
-                      <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl bg-zinc-200">
+                      {/* ADDED: dark:bg-zinc-900 to the image placeholder */}
+                      <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-900 transition-colors duration-500">
                         <Image
                           src={project.src}
                           alt={project.name}
@@ -138,14 +138,17 @@ export default function WorkGallery() {
                       </div>
                       <div className="mt-6 flex justify-between items-start">
                         <div>
-                          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 transition-colors group-hover:text-zinc-500">
+                          {/* ADDED: dark:text-zinc-100 */}
+                          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 transition-colors group-hover:text-zinc-500 dark:group-hover:text-zinc-400 duration-300">
                             {project.name}
                           </h2>
-                          <p className="mt-2 text-sm font-medium text-zinc-500">
+                          {/* ADDED: dark:text-zinc-400 */}
+                          <p className="mt-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
                             {project.role}
                           </p>
                         </div>
-                        <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 text-right">
+                        {/* ADDED: dark:text-zinc-500 */}
+                        <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 transition-colors duration-500 text-right">
                           {project.location}
                         </p>
                       </div>

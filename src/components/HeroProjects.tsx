@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link"; // NEW: Imported Next.js Link for pre-fetching
+import Link from "next/link";
 import localFont from "next/font/local";
 import { motion, AnimatePresence } from "framer-motion";
 import WavyRowCanvas from "./WavyRowCanvas";
@@ -84,22 +84,23 @@ export default function HeroProjects() {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
 
   const handleRowClick = (slug: string) => {
-    // Toggle accordion logic
     setOpenSlug(openSlug === slug ? null : slug);
   };
 
   return (
+    // ADDED: dark:bg-zinc-950
     <div
-      className={`relative w-full flex flex-col pt-32 pb-8 px-8 bg-zinc-100 ${circular.className}`}
+      className={`relative w-full flex flex-col pt-32 pb-8 px-8 bg-zinc-100 dark:bg-zinc-950 transition-colors duration-500 ${circular.className}`}
     >
-      {/* 1. Global List Header */}
-      <div className="border-b border-zinc-200 pb-2 mb-2 flex justify-between items-end uppercase text-xs font-bold tracking-[0.2em] text-zinc-400">
+      {/* Global List Header */}
+      {/* ADDED: dark:border-zinc-800 dark:text-zinc-500 */}
+      <div className="border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-2 flex justify-between items-end uppercase text-xs font-bold tracking-[0.2em] text-zinc-400 dark:text-zinc-500 transition-colors duration-500">
         <div className="w-[45%]">Project Name</div>
         <div className="w-[30%]">Services</div>
         <div className="w-[25%] text-right">Location</div>
       </div>
 
-      {/* 2. Main Interactive List */}
+      {/* Main Interactive List */}
       <div className="relative z-10 w-full pointer-events-auto">
         {PROJECTS.map((project) => {
           const isOpen = openSlug === project.slug;
@@ -118,7 +119,6 @@ export default function HeroProjects() {
   );
 }
 
-// 3. The Re-architected Row Component
 function ProjectRow({
   project,
   isOpen,
@@ -132,45 +132,46 @@ function ProjectRow({
 
   return (
     <div
-      className="relative w-full cursor-pointer group border-b border-zinc-200"
+      // ADDED: dark:border-zinc-800
+      className="relative w-full cursor-pointer group border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-500"
       onClick={onToggle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* DOM Row Header (Always Visible) */}
       <div className="relative z-10 flex justify-between items-center py-6">
         {/* Project Title */}
         <div className="w-[45%]">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 group-hover:text-zinc-500 transition-colors duration-300">
+          {/* ADDED: dark:text-zinc-100 and dark:group-hover:text-zinc-400 */}
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
             {project.name}
           </h1>
         </div>
 
         {/* Services */}
-        <div className="w-[30%] uppercase text-xs font-bold tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors duration-300">
+        {/* ADDED: dark:text-zinc-500 dark:group-hover:text-zinc-400 */}
+        <div className="w-[30%] uppercase text-xs font-bold tracking-[0.2em] text-zinc-500 dark:text-zinc-500 group-hover:text-zinc-400 dark:group-hover:text-zinc-400 transition-colors duration-300">
           {project.services}
         </div>
 
         {/* Location */}
-        <div className="w-[25%] text-right uppercase text-xs font-bold tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors duration-300">
+        <div className="w-[25%] text-right uppercase text-xs font-bold tracking-[0.2em] text-zinc-500 dark:text-zinc-500 group-hover:text-zinc-400 dark:group-hover:text-zinc-400 transition-colors duration-300">
           {project.location}
         </div>
       </div>
 
-      {/* 4. The Accordion Reveal */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }} // Smooth spring-like reveal
+            transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
             className="overflow-hidden"
           >
-            {/* Split layout inside the accordion */}
             <div className="pb-12 pt-4 flex gap-8 h-[400px]">
-              {/* Left Column: The WebGL Image Canvas */}
-              <div className="relative w-[45%] h-full rounded-lg overflow-hidden bg-zinc-200">
+              {/* Left Column Canvas Wrapper */}
+              {/* ADDED: dark:bg-zinc-900 */}
+              <div className="relative w-[45%] h-full rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-900 transition-colors duration-500">
                 <WavyRowCanvas
                   activeImage={project.src}
                   isHovered={isHovered || isOpen}
@@ -178,39 +179,39 @@ function ProjectRow({
                 />
               </div>
 
-              {/* Right Column: Project Metadata & Description */}
-              <div className="w-[55%] flex flex-col justify-between h-full pl-8 border-l border-zinc-200">
-                {/* Top Metadata Grid */}
+              {/* Right Column Metadata */}
+              {/* ADDED: dark:border-zinc-800 */}
+              <div className="w-[55%] flex flex-col justify-between h-full pl-8 border-l border-zinc-200 dark:border-zinc-800 transition-colors duration-500">
                 <div className="flex gap-16">
                   <div>
-                    <div className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2">
+                    <div className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-2 transition-colors duration-500">
                       Role
                     </div>
-                    <div className="text-sm font-medium text-zinc-900">
+                    {/* ADDED: dark:text-zinc-100 */}
+                    <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 transition-colors duration-500">
                       {project.role}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2">
+                    <div className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-2 transition-colors duration-500">
                       Year
                     </div>
-                    <div className="text-sm font-medium text-zinc-900">
+                    <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 transition-colors duration-500">
                       {project.year}
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom Description & Button */}
                 <div>
-                  <p className="text-xl md:text-2xl leading-relaxed text-zinc-900 font-medium max-w-xl mb-8">
+                  {/* ADDED: dark:text-zinc-300 */}
+                  <p className="text-xl md:text-2xl leading-relaxed text-zinc-900 dark:text-zinc-300 font-medium max-w-xl mb-8 transition-colors duration-500">
                     {project.details}
                   </p>
 
-                  {/* NEW: Replaced button with Next.js Link */}
+                  {/* ADDED: dark:text-zinc-100 dark:border-zinc-100 */}
                   <Link
                     href={`/work/${project.slug}`}
-                    className="inline-block border-b border-zinc-900 pb-1 text-xs font-bold tracking-[0.2em] uppercase text-zinc-900 hover:opacity-50 transition-opacity"
-                    // Stop propagation so clicking the link doesn't also close the accordion!
+                    className="inline-block border-b border-zinc-900 dark:border-zinc-100 pb-1 text-xs font-bold tracking-[0.2em] uppercase text-zinc-900 dark:text-zinc-100 hover:opacity-50 transition-opacity"
                     onClick={(e) => e.stopPropagation()}
                   >
                     View Case Study
