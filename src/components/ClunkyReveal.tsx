@@ -54,7 +54,7 @@ export default function ClunkyReveal({
             }}
             style={{
               display: "inline-block",
-              transformOrigin: "50% 99%",
+              transformOrigin: "50% 100%",
               willChange: "transform, opacity, rotateX",
             }}
           >
