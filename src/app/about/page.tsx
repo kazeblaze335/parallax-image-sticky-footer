@@ -1,44 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScroll } from "framer-motion";
-import localFont from "next/font/local";
-import Lenis from "@studio-freight/lenis";
-import Navbar from "@/components/NavBar";
-import Footer from "@/components/Footer";
-import FilmGrain from "@/components/FilmGrain";
-import SplitText from "@/components/SplitText";
 import Image from "next/image";
-import StickyHeroReveal from "@/components/StickyHeroReveal"; // <-- Import the new component
+import { motion } from "framer-motion";
 
-const neueMontreal = localFont({
-  src: "../../../public/fonts/PPNeueMontreal-Bold.otf",
-  variable: "--font-neue",
-});
+// 1. Updated import paths to the new Component Factory folders
+import Navbar from "@/components/ui/NavBar";
+import Footer from "@/components/ui/Footer";
+import FilmGrain from "@/components/ui/FilmGrain";
+import StickyHeroReveal from "@/components/sections/StickyHeroReveal";
+import ClunkyReveal from "@/components/motion/ClunkyReveal";
 
 export default function AboutPage() {
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
+  // 2. Lenis and useScroll are completely removed!
+  // The page natively hooks into the SmoothScrollProvider in layout.tsx.
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const lenis = new Lenis();
-    lenisRef.current = lenis;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
-    return () => lenis.destroy();
   }, []);
 
   useEffect(() => {
@@ -54,85 +35,97 @@ export default function AboutPage() {
   return (
     <>
       <FilmGrain />
-      <main
-        ref={containerRef}
-        className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500"
-      >
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
         <div
           className="relative z-10 transition-colors duration-500"
           style={{ marginBottom: `${footerHeight}px` }}
         >
-          {/* THE NEW MODULAR COMPONENT */}
-          <StickyHeroReveal scrollYProgress={scrollYProgress} />
+          {/* =======================================================
+              1. THE UNIFIED HERO
+              Pass the custom "ABOUT" title into the global component
+              ======================================================= */}
+          <StickyHeroReveal title="ABOUT" showTrademark={false} />
 
-          {/* THE CONTENT LAYER SLIDING OVER IT */}
-          <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-32 md:pt-48 px-8 md:px-16 pb-40 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
-            <SplitText
-              text="SYSTEMS & SPATIAL DESIGN."
-              delay={0.017}
-              className={`!text-[8vw] md:!text-[6vw] leading-[0.85] tracking-tight uppercase max-w-5xl ${neueMontreal.className}`}
-            />
-
-            <div className="mt-20 md:mt-32 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-20 border-t border-zinc-300 dark:border-zinc-800 pt-16 transition-colors duration-500">
-              <div className="md:col-span-4 space-y-12">
-                <div>
-                  <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-4">
-                    Focus
+          {/* =======================================================
+              2. THE SLIDING CONTENT LAYER
+              ======================================================= */}
+          <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-24 md:pt-40 pb-32 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)] border-t border-zinc-200 dark:border-zinc-800">
+            <div className="px-8 md:px-16 max-w-[1800px] mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-20">
+                {/* Left Column: The Massive Text Hook */}
+                <div className="lg:col-span-8 flex flex-col justify-center">
+                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-zinc-900 dark:text-zinc-100 mb-8">
+                    We are a digital creative studio blurring the line between
+                    technology and art.
+                  </h2>
+                  <p className="text-xl md:text-2xl text-zinc-500 dark:text-zinc-400 font-medium max-w-3xl leading-relaxed">
+                    By combining strategic design with cutting-edge WebGL and
+                    motion physics, we build immersive brand experiences for
+                    venture portfolios and enterprise clients that drive
+                    undeniable business results.
                   </p>
-                  <ul className="text-lg font-medium space-y-2">
-                    <li>Creative Direction</li>
-                    <li>React & Next.js</li>
-                    <li>WebGL & Three.js</li>
-                    <li>Interaction Design</li>
+                </div>
+
+                {/* Right Column: The Capabilities List */}
+                <div className="lg:col-span-4 lg:mt-0 mt-12 flex flex-col justify-end">
+                  <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-6 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+                    Capabilities
+                  </p>
+                  <ul className="flex flex-col gap-y-4 text-lg md:text-xl font-medium text-zinc-900 dark:text-zinc-100">
+                    <li className="flex items-center justify-between group cursor-pointer">
+                      <span className="transition-transform duration-300 group-hover:translate-x-2">
+                        Creative Direction
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between group cursor-pointer">
+                      <span className="transition-transform duration-300 group-hover:translate-x-2">
+                        Interactive WebGL
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between group cursor-pointer">
+                      <span className="transition-transform duration-300 group-hover:translate-x-2">
+                        UI/UX Design
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between group cursor-pointer">
+                      <span className="transition-transform duration-300 group-hover:translate-x-2">
+                        Headless CMS Integration
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between group cursor-pointer">
+                      <span className="transition-transform duration-300 group-hover:translate-x-2">
+                        E-Commerce Architecture
+                      </span>
+                    </li>
                   </ul>
                 </div>
-                <div>
-                  <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-4">
-                    Location
-                  </p>
-                  <p className="text-lg font-medium">San Francisco, CA</p>
-                </div>
               </div>
 
-              <div className="md:col-span-8">
-                <p className="text-2xl md:text-4xl leading-snug font-medium text-zinc-900 dark:text-zinc-100 mb-10 transition-colors duration-500">
-                  I am a creative developer operating at the intersection of
-                  digital environments and human behavior.
-                </p>
-                <div className="text-lg md:text-xl leading-relaxed text-zinc-600 dark:text-zinc-400 space-y-8 max-w-2xl font-medium transition-colors duration-500">
-                  <p>
-                    With a Bachelor of Science in Cultural Anthropology, I
-                    approach user interface design through an ethnographic lens.
-                    This foundational perspective allows me to engineer spatial
-                    web experiences that aren't just brutally modern, but deeply
-                    intuitive and connected to how people naturally navigate
-                    information.
-                  </p>
-                  <p>
-                    My practice leverages high-performance tools like Next.js
-                    and WebGL to treat typography and layout as structural
-                    artifacts. Currently expanding my understanding of language
-                    and human communication, I am preparing to pursue a Master's
-                    in TESOL at San Francisco State University in Autumn 2026.
-                  </p>
-                </div>
-
-                <div className="mt-16">
-                  <Image
-                    src="/images/parallax-2.jpg"
-                    alt="Studio atmosphere"
-                    width={800}
-                    height={500}
-                    className="w-full h-auto aspect-video object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-700"
-                  />
-                </div>
-              </div>
+              {/* A massive agency-style image block */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full mt-32 relative aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-900"
+              >
+                {/* Replace this with an actual photo of your studio or abstract 3D render */}
+                <Image
+                  src="/images/project-10.jpg"
+                  alt="unitPLUS Studio"
+                  fill
+                  className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                />
+              </motion.div>
             </div>
           </div>
         </div>
 
+        {/* =======================================================
+            3. THE STICKY FOOTER
+            ======================================================= */}
         <div
           ref={footerRef}
           className="fixed bottom-0 left-0 w-full z-0 pointer-events-none"

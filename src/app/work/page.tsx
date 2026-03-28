@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import localFont from "next/font/local";
 import Link from "next/link";
 import Image from "next/image";
-import Lenis from "@studio-freight/lenis";
-import { motion, useScroll } from "framer-motion";
-import Navbar from "@/components/NavBar";
-import Footer from "@/components/Footer";
-import FilmGrain from "@/components/FilmGrain";
-import StickyHeroReveal from "@/components/StickyHeroReveal"; // <-- Imported the unified hero!
+import { motion } from "framer-motion";
+
+// Updated import paths to point to the new subfolders!
+import Navbar from "@/components/ui/NavBar";
+import Footer from "@/components/ui/Footer";
+import FilmGrain from "@/components/ui/FilmGrain";
+import StickyHeroReveal from "@/components/sections/StickyHeroReveal";
 
 const neueMontreal = localFont({
   src: "../../../public/fonts/PPNeueMontreal-Bold.otf",
@@ -62,37 +63,14 @@ const PROJECTS = [
 ];
 
 export default function WorkGallery() {
-  const lenisRef = useRef<Lenis | null>(null);
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parallax Scroll Tracker for the Sticky Hero
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
+  // We removed Lenis and useScroll here because they are now managed
+  // globally by Zustand and the SmoothScrollProvider in layout.tsx!
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const lenis = new Lenis({
-      lerp: 0.08,
-      smoothWheel: true,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-    lenisRef.current = lenis;
-
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-      cancelAnimationFrame(rafId);
-    };
   }, []);
 
   useEffect(() => {
@@ -108,30 +86,18 @@ export default function WorkGallery() {
   return (
     <>
       <FilmGrain />
-      <main
-        ref={containerRef}
-        className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500"
-      >
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
         <div
           className="relative z-10 transition-colors duration-500"
           style={{ marginBottom: `${footerHeight}px` }}
         >
-          {/* =======================================================
-              1. THE UNIFIED CLUNKY REVEAL HERO
-              Pass in the custom title and disable the trademark
-              ======================================================= */}
-          <StickyHeroReveal
-            scrollYProgress={scrollYProgress}
-            title="PROJECTS"
-            showTrademark={false}
-          />
+          {/* 1. THE UNIFIED CLUNKY REVEAL HERO */}
+          {/* Note: scrollYProgress is no longer needed as a prop because StickyHeroReveal reads from Zustand natively */}
+          <StickyHeroReveal title="PROJECTS" showTrademark={false} />
 
-          {/* =======================================================
-              2. THE SLIDING CONTENT LAYER
-              Drops over the sticky hero with a negative top shadow
-              ======================================================= */}
+          {/* 2. THE SLIDING CONTENT LAYER */}
           <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-24 md:pt-40 pb-32 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)] border-t border-zinc-200 dark:border-zinc-800">
             <div className="px-8 md:px-16 max-w-[1800px] mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">

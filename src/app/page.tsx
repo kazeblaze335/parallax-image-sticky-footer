@@ -1,53 +1,73 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScroll } from "framer-motion";
-import Lenis from "@studio-freight/lenis";
-import Navbar from "@/components/NavBar";
-import FeaturedWorks from "@/components/FeaturedWorks";
-import ProjectShowcase from "@/components/ProjectShowcase"; // <-- Import the new interactive list
-import Footer from "@/components/Footer";
-import FilmGrain from "@/components/FilmGrain";
-import VelocityMarquee from "@/components/VelocityMarquee"; // <-- Import the new Marquee
-import StickyHeroReveal from "@/components/StickyHeroReveal";
-import SwissVideoBlock from "@/components/SwissVideoBlock";
+import Navbar from "@/components/ui/NavBar";
+import FeaturedWorks from "@/components/sections/FeaturedWorks";
+import ProjectShowcase from "@/components/sections/ProjectShowcase";
+import Footer from "@/components/ui/Footer";
+import FilmGrain from "@/components/ui/FilmGrain";
+import VelocityMarquee from "@/components/motion/VelocityMarquee";
+import StickyHeroReveal from "@/components/sections/StickyHeroReveal";
+import SwissVideoBlock from "@/components/sections/SwissVideoBlock";
+
+// This data structure perfectly matches the strict TypeScript interface
+// we built into the ProjectShowcase component.
+const HOME_PROJECTS = [
+  {
+    name: "Native Instruments",
+    location: "Berlin / 2023",
+    src: "/images/project-1.jpg",
+    slug: "native-instruments",
+    role: "Lead Agency",
+  },
+  {
+    name: "Oura",
+    location: "Oulu / 2023",
+    src: "/images/project-2.jpg",
+    slug: "oura",
+    role: "Digital Partner",
+  },
+  {
+    name: "Hender Scheme",
+    location: "Tokyo / 2023",
+    src: "/images/project-3.jpg",
+    slug: "hender-scheme",
+    role: "Creative Direction",
+  },
+  {
+    name: "B&O Play",
+    location: "Struer / 2022",
+    src: "/images/project-4.jpg",
+    slug: "bo-play",
+    role: "Interactive Design",
+  },
+  {
+    name: "Nothing",
+    location: "London / 2022",
+    src: "/images/project-5.jpg",
+    slug: "nothing",
+    role: "Technical Partner",
+  },
+  {
+    name: "Gentle Monster",
+    location: "Seoul / 2022",
+    src: "/images/project-6.jpg",
+    slug: "gentle-monster",
+    role: "Lead Agency",
+  },
+];
 
 export default function Home() {
-  const lenisRef = useRef<Lenis | null>(null);
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Track the scroll to pass down to our components
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
 
   useEffect(() => {
+    // Reset scroll position on route load
     window.scrollTo(0, 0);
-
-    const lenis = new Lenis({
-      lerp: 0.08,
-      smoothWheel: true,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    lenisRef.current = lenis;
-    let rafId: number;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-      cancelAnimationFrame(rafId);
-    };
   }, []);
 
+  // Dynamically measure the footer height so the main content layer
+  // leaves the exact right amount of space to reveal the sticky footer.
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -59,20 +79,13 @@ export default function Home() {
   }, []);
 
   const scrollToTop = () => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { duration: 1.5 });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <>
       <FilmGrain />
-      <main
-        ref={containerRef}
-        className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500"
-      >
+      <main className="relative bg-zinc-100 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip transition-colors duration-500">
         <Navbar />
 
         <div
@@ -80,7 +93,11 @@ export default function Home() {
           style={{ marginBottom: `${footerHeight}px` }}
         >
           {/* 1. THE HERO REVEAL */}
-          <StickyHeroReveal scrollYProgress={scrollYProgress} />
+          <StickyHeroReveal
+            title="NØRD OBJECTS"
+            subtitle="Explore our universe"
+            showTrademark={true}
+          />
 
           {/* 2. THE SLIDING CONTENT LAYER */}
           <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-24 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
@@ -93,17 +110,19 @@ export default function Home() {
               <SwissVideoBlock />
             </div>
 
-            {/* The New Interactive Project Showcase */}
+            {/* The Interactive Project Showcase */}
             <div className="w-full pt-16 pb-24 border-t border-zinc-200 dark:border-zinc-800">
               <div className="w-full flex justify-center mb-8 px-8 md:px-16">
                 <p className="text-xs font-bold tracking-[0.4em] uppercase text-zinc-400 dark:text-zinc-500 transition-colors duration-500">
                   Selected Projects
                 </p>
               </div>
-              <ProjectShowcase />
+
+              {/* Injecting the exact data payload */}
+              <ProjectShowcase projects={HOME_PROJECTS} />
             </div>
 
-            {/* The Velocity Marquee (Replaced SplitText) */}
+            {/* The Velocity Marquee */}
             <div className="flex flex-col items-center justify-center py-32 text-center border-t border-zinc-200 dark:border-zinc-800 transition-colors duration-500 overflow-hidden">
               <VelocityMarquee text="KEEP SCROLLING • " />
 

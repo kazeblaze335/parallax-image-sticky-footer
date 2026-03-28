@@ -3,10 +3,10 @@
 import OptimizedVideo from "./OptimizedVideo";
 import { motion } from "framer-motion";
 import localFont from "next/font/local";
-import InteractiveVideoBlock from "./InteractiveVideoBlock";
+import InteractiveVideoBlock from "../ui/InteractiveVideoBlock";
 
 const neueMontreal = localFont({
-  src: "../../public/fonts/PPNeueMontreal-Bold.otf",
+  src: "../../../public/fonts/PPNeueMontreal-Bold.otf",
   variable: "--font-neue",
 });
 
