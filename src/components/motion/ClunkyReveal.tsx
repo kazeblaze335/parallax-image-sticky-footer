@@ -1,67 +1,71 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { motion, Variants } from "framer-motion";
+import { useStore } from "@/store/useStore";
 
-export default function ClunkyReveal({
-  text,
-  delay = 1500, // Milliseconds
-  className = "",
-}: {
+interface ClunkyRevealProps {
   text: string;
   delay?: number;
-  className?: string;
-}) {
-  const chars = text.split("");
-  const totalChars = chars.length;
+}
 
-  const pathname = usePathname();
+export default function ClunkyReveal({ text, delay = 0 }: ClunkyRevealProps) {
+  const { isLoading } = useStore();
+  const words = text.split(" ");
 
-  // Framer Motion's delay property requires seconds, not milliseconds.
-  // We do the exact same math, then divide by 1000.
-  const transitionBuffer = 900;
-  const baseDelayInSeconds = (delay + transitionBuffer) / 1000;
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: delay + 0.8,
+      },
+    },
+  };
+
+  const characterVariants: Variants = {
+    hidden: {
+      y: "150%",
+      rotate: 10,
+    },
+    visible: {
+      y: "0%",
+      rotate: 0,
+      transition: {
+        type: "spring",
+        damping: 14,
+        stiffness: 150,
+      },
+    },
+  };
 
   return (
-    <div
-      // THE FIX: This key forces a hard unmount/remount on route change,
-      // ensuring Framer Motion's animation clock resets perfectly every time.
-      key={pathname}
-      style={{ perspective: "1200px" }}
-      className={`flex overflow-visible ${className}`}
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate={isLoading ? "hidden" : "visible"}
+      className="flex whitespace-nowrap"
     >
-      {chars.map((char, index) => {
-        const reverseIndex = totalChars - 1 - index;
-        return (
-          <motion.span
-            key={index}
-            // We return to the declarative initial/animate props
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { y: "100%", rotateX: 130, opacity: 0 },
-              visible: {
-                y: "0%",
-                rotateX: 0,
-                opacity: 1,
-                transition: {
-                  duration: 1.2,
-                  ease: [0.16, 1, 0.3, 1],
-                  // Framer Motion handles the clock natively
-                  delay: baseDelayInSeconds + reverseIndex * 0.08,
-                },
-              },
-            }}
-            style={{
-              display: "inline-block",
-              transformOrigin: "50% 100%",
-              willChange: "transform, opacity, rotateX",
-            }}
-          >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        );
-      })}
-    </div>
+      {words.map((word, wordIndex) => (
+        <span key={wordIndex} className="flex mr-[0.25em] last:mr-0">
+          {word.split("").map((char, charIndex) => (
+            <span
+              key={charIndex}
+              // FIX: Added -mr-[0.08em] to the wrapper!
+              // This pulls the next letter backwards to perfectly negate the internal padding.
+              className="inline-block overflow-hidden pt-8 pb-12 px-4 -mt-8 -mb-12 -mx-4 -mr-[0.08em]"
+            >
+              <motion.span
+                variants={characterVariants}
+                // The padding that saves the "R" from clipping
+                className="inline-block pr-[0.08em] origin-bottom-left"
+              >
+                {char}
+              </motion.span>
+            </span>
+          ))}
+        </span>
+      ))}
+    </motion.div>
   );
 }
