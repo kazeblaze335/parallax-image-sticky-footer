@@ -47,8 +47,8 @@ export default function StickyHeroReveal({
           opacity: isReady ? sojuOpacity : 1,
           y: sojuY,
         }}
-        // Restored the massive 22vw size and kept the whitespace-nowrap lock
-        className={`flex flex-row items-start justify-center text-[22vw] leading-[0.75] tracking-tighter uppercase text-zinc-900 dark:text-zinc-100 font-neue whitespace-nowrap`}
+        // Added font-black and ensured font-neue is present!
+        className={`flex flex-row items-start justify-center text-[22vw] leading-[0.75] tracking-tight uppercase text-zinc-900 dark:text-zinc-100 font-neue font-black whitespace-nowrap`}
       >
         <ClunkyReveal key={`text-${pathname}`} text={title} delay={0.2} />
 
@@ -71,7 +71,6 @@ export default function StickyHeroReveal({
           </motion.span>
         )}
       </motion.div>
-
       <motion.p
         key={`${pathname}-subtitle`}
         initial={{ opacity: 0, y: 20 }}
