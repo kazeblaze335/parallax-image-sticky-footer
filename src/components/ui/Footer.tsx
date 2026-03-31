@@ -10,38 +10,39 @@ const neueMontreal = localFont({
 
 export default function Footer() {
   return (
-    // ADDED: dark:bg-zinc-900
-    <footer className="h-screen w-full flex flex-col items-center justify-between overflow-hidden bg-zinc-200 dark:bg-zinc-900 pt-32 pb-12 transition-colors duration-500">
-      {/* Top Info Grid */}
-      {/* ADDED: dark:text-zinc-400 */}
-      <div className="w-full px-8 md:px-16 flex justify-between items-start text-xs font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
-        <div className="flex flex-col gap-2">
-          <p>unitPLUS</p>
-          <p>Creative Studio</p>
-        </div>
-        <div className="flex flex-col gap-2 text-right">
-          <Link
-            href="mailto:hello@unitplus.com"
-            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            hello@unitplus.com
-          </Link>
-          <p>San Francisco, CA</p>
+    <footer className="h-screen w-full flex flex-col justify-between overflow-hidden bg-zinc-200 dark:bg-zinc-900 transition-colors duration-500 relative">
+      {/* TOP FLANKS: Contact & Studio Info 
+        We use absolute positioning here to push them to the absolute edges 
+        of the screen, freeing up the entire center for the typography.
+      */}
+      <div className="absolute top-32 left-8 md:left-16 font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 z-10">
+        <p>This is SOJU studio.</p>
+      </div>
+
+      <div className="absolute top-32 right-8 md:right-16 text-right font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 z-10">
+        <Link
+          href="mailto:hello@soju.studio"
+          className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
+          hello@soju.studio
+        </Link>
+      </div>
+
+      {/* CENTER: The Massive SOJU Graphic 
+        By putting this in a flex-grow container, it naturally centers itself
+        perfectly in the massive 100vh void.
+      */}
+      <div className="flex-grow flex items-center justify-center w-full">
+        <div
+          className={`text-[25vw] leading-[0.75] tracking-tighter uppercase text-zinc-900 dark:text-zinc-100 transition-colors duration-500 ${neueMontreal.className}`}
+        >
+          SOJU
         </div>
       </div>
 
-      {/* The Massive SOJU Graphic */}
-      {/* ADDED: dark:text-zinc-100 */}
-      <div
-        className={`text-[25vw] leading-[0.75] tracking-tighter uppercase text-zinc-900 dark:text-zinc-100 transition-colors duration-500 ${neueMontreal.className}`}
-      >
-        SOJU<span className="text-[10vw] align-top relative top-4">®</span>
-      </div>
-
-      {/* Bottom Copyright & Socials */}
-      {/* ADDED: dark:text-zinc-400 */}
-      <div className="w-full px-8 md:px-16 flex justify-between items-end text-xs font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
-        <p>© 2026</p>
+      {/* BOTTOM: Copyright & Socials */}
+      <div className="w-full px-8 md:px-16 pb-12 flex justify-between items-end font-mono text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500 z-10 relative">
+        <p>© {new Date().getFullYear()}</p>
         <div className="flex gap-6">
           <Link
             href="#"

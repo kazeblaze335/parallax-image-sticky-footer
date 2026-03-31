@@ -40,9 +40,6 @@ export default function SwissVideoBlock() {
         </filter>
       </svg>
 
-      {/* MOBILE FIX: Reduced gap on mobile (gap-8) to keep the text crushing up 
-        against the video metadata. Kept md:gap-16 for desktop breathing room. 
-      */}
       <div className="w-full px-6 md:px-16 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start">
         {/* LEFT COLUMN: The 16:9 Cinematic Video Block */}
         <div className="md:col-span-8 w-full relative group cursor-crosshair">
@@ -94,8 +91,8 @@ export default function SwissVideoBlock() {
         </div>
 
         {/* RIGHT COLUMN: Condensed Typographic Block */}
-        {/* MOBILE FIX: Added pt-4 to gently push off the metadata, but keep it tight */}
-        <div className="md:col-span-4 flex flex-col h-full justify-end pb-8 pt-4 md:pt-0">
+        {/* THE FIX: Removed `h-full justify-end pb-8`. This allows the content to naturally sit flush at the top! */}
+        <div className="md:col-span-4 flex flex-col pt-4 md:pt-0">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -105,9 +102,7 @@ export default function SwissVideoBlock() {
             <p className="text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase text-zinc-500 mb-6">
               Visual Architecture — 04
             </p>
-            {/* MOBILE FIX: Typography is set to an aggressive 18vw on mobile. 
-              This ensures it stretches edge-to-edge before scaling down to 5vw on desktop. 
-            */}
+
             <h2
               className={`text-[18vw] md:text-[5vw] tracking-tighter leading-[0.82] uppercase text-zinc-900 dark:text-zinc-100 transition-colors duration-500 ${neueMontreal.className}`}
             >

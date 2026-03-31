@@ -4,19 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// 1. Updated import paths to the new Component Factory folders
 import Navbar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import FilmGrain from "@/components/ui/FilmGrain";
 import StickyHeroReveal from "@/components/sections/StickyHeroReveal";
-import ClunkyReveal from "@/components/motion/ClunkyReveal";
 
 export default function AboutPage() {
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-
-  // 2. Lenis and useScroll are completely removed!
-  // The page natively hooks into the SmoothScrollProvider in layout.tsx.
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -44,7 +39,6 @@ export default function AboutPage() {
         >
           {/* =======================================================
               1. THE UNIFIED HERO
-              Pass the custom "ABOUT" title into the global component
               ======================================================= */}
           <StickyHeroReveal title="ABOUT" showTrademark={false} />
 
@@ -53,9 +47,11 @@ export default function AboutPage() {
               ======================================================= */}
           <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-24 md:pt-40 pb-32 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)] border-t border-zinc-200 dark:border-zinc-800">
             <div className="px-8 md:px-16 max-w-[1800px] mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-20">
+              {/* THE FIX: Added `items-start` to lock the columns to the absolute top */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-20 items-start">
                 {/* Left Column: The Massive Text Hook */}
-                <div className="lg:col-span-8 flex flex-col justify-center">
+                {/* THE FIX: Removed `justify-center` so it rests naturally at the ceiling */}
+                <div className="lg:col-span-8 flex flex-col pt-0">
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-zinc-900 dark:text-zinc-100 mb-8">
                     We are a digital creative studio blurring the line between
                     technology and art.
@@ -69,7 +65,8 @@ export default function AboutPage() {
                 </div>
 
                 {/* Right Column: The Capabilities List */}
-                <div className="lg:col-span-4 lg:mt-0 mt-12 flex flex-col justify-end">
+                {/* THE FIX: Removed `justify-end` and added `lg:mt-2` for perfect optical alignment with the 7xl text */}
+                <div className="lg:col-span-4 mt-12 lg:mt-2 flex flex-col pt-0">
                   <p className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-6 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                     Capabilities
                   </p>
@@ -111,7 +108,6 @@ export default function AboutPage() {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full mt-32 relative aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-900"
               >
-                {/* Replace this with an actual photo of your studio or abstract 3D render */}
                 <Image
                   src="/images/project-10.jpg"
                   alt="unitPLUS Studio"

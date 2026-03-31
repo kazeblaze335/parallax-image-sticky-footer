@@ -8,7 +8,6 @@ import {
   useMotionTemplate,
 } from "framer-motion";
 
-// Expanded to 6 Disciplines!
 const SHOWREEL_DATA = [
   {
     id: "01",
@@ -35,7 +34,7 @@ const SHOWREEL_DATA = [
     id: "04",
     title: "Motion & 3D",
     subtitle: "Kinetic storytelling.",
-    videoSrc: "/videos/showcase-reel-4.mp4", // Assumes you have these mapped in your public folder
+    videoSrc: "/videos/showcase-reel-4.mp4",
     fallbackImg: "/images/project-4.jpg",
   },
   {
@@ -54,6 +53,40 @@ const SHOWREEL_DATA = [
   },
 ];
 
+// --- NEW: Scroll-Linked Split Text Character ---
+const AnimatedChar = ({
+  char,
+  index,
+  total,
+  scrollYProgress,
+  start,
+}: {
+  char: string;
+  index: number;
+  total: number;
+  scrollYProgress: any;
+  start: number;
+}) => {
+  // The text animation happens during the first 5% of this section's scroll
+  const revealStart = start;
+  const revealEnd = start + 0.05;
+
+  // Calculate the micro-stagger for this specific letter
+  const step = (revealEnd - revealStart) / total;
+  const charStart = revealStart + step * index;
+  const charEnd = charStart + 0.02; // It takes exactly 2% of scroll to lift one letter
+
+  const y = useTransform(scrollYProgress, [charStart, charEnd], ["120%", "0%"]);
+
+  return (
+    <span className="relative inline-block overflow-hidden pt-2 pb-6 -mt-2 -mb-6">
+      <motion.span style={{ y }} className="inline-block whitespace-pre">
+        {char}
+      </motion.span>
+    </span>
+  );
+};
+
 const ParallaxItem = ({
   item,
   index,
@@ -68,11 +101,9 @@ const ParallaxItem = ({
   const start = index / total;
   const end = (index + 1) / total;
 
-  // 1. The Razor Line Clip-Path Expansion
-  // clipY starts at 49.8% (cutting from top and bottom) leaving a 0.4% vertical sliver
-  // clipX starts at 15% (cutting from left and right) to give the line some horizontal breathing room
+  // 1. The Razor Line Clip-Path
   const clipX = useTransform(scrollYProgress, [start, end], [15, 0]);
-  const clipY = useTransform(scrollYProgress, [start, end], [49.8, 0]);
+  const clipY = useTransform(scrollYProgress, [start, end], [49.95, 0]);
   const clipPath = useMotionTemplate`inset(${clipY}% ${clipX}% ${clipY}% ${clipX}%)`;
 
   // 2. The Video Scale
@@ -85,7 +116,7 @@ const ParallaxItem = ({
     [index === 0 ? 1 : 0, 1],
   );
 
-  // 4. Typography Parallax & Crossfade
+  // 4. Subtitle & Global Typography Parallax
   const textY = useTransform(scrollYProgress, [start, end], ["0%", "-20%"]);
   const textOpacity = useTransform(
     scrollYProgress,
@@ -97,6 +128,10 @@ const ParallaxItem = ({
     ],
     [index === 0 ? 1 : 0, 1, 1, index === total - 1 ? 1 : 0],
   );
+
+  // Track absolute letter index across multiple words for perfect staggering
+  let absoluteCharIndex = 0;
+  const totalChars = item.title.replace(/\s/g, "").length;
 
   return (
     <motion.div
@@ -135,9 +170,27 @@ const ParallaxItem = ({
         </div>
 
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full pb-8">
-          <h2 className="text-[12vw] md:text-[8vw] font-black font-neue leading-[0.85] tracking-tighter uppercase max-w-[80%] drop-shadow-xl">
-            {item.title}
+          {/* THE FIX: Implemented the Scroll-Linked Split Text */}
+          <h2 className="text-[12vw] md:text-[8vw] font-black font-neue leading-[0.85] tracking-tighter uppercase max-w-[80%] drop-shadow-xl flex flex-wrap">
+            {item.title.split(" ").map((word: string, wIndex: number) => (
+              <span key={wIndex} className="inline-flex mr-[0.25em]">
+                {word.split("").map((char: string, cIndex: number) => {
+                  const currentIndex = absoluteCharIndex++;
+                  return (
+                    <AnimatedChar
+                      key={cIndex}
+                      char={char}
+                      index={currentIndex}
+                      total={totalChars}
+                      scrollYProgress={scrollYProgress}
+                      start={start}
+                    />
+                  );
+                })}
+              </span>
+            ))}
           </h2>
+
           <p className="mt-4 md:mt-0 text-sm md:text-xl font-medium tracking-tight drop-shadow-lg">
             {item.subtitle}
           </p>
@@ -150,8 +203,6 @@ const ParallaxItem = ({
 export default function InfiniteParallaxHero() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // THE EXTENDED SCROLL: Increased to 1200vh
-  // 1200vh / 6 items = a massive 200vh of physical scroll distance per video transition!
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
