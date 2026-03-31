@@ -1,4 +1,6 @@
-import tunnel from "tunnel-rat";
+"use client";
 
-// We export a single, global tunnel instance for WebGL elements
-export const webglTunnel = tunnel();
+import tunnelRat from "tunnel-rat";
+
+// Initialize and explicitly export the tunnel
+export const tunnel = tunnelRat();

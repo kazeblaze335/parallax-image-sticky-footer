@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/ui/NavBar";
-import FeaturedWorks from "@/components/sections/FeaturedWorks";
 import Footer from "@/components/ui/Footer";
 import FilmGrain from "@/components/ui/FilmGrain";
 import VelocityMarquee from "@/components/motion/VelocityMarquee";
@@ -48,12 +47,10 @@ export default function Home() {
           />
 
           <div className="relative z-10 bg-zinc-100 dark:bg-zinc-950 pt-24 transition-colors duration-500 shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
-            {/* Featured Works & Video Block Only! */}
             <div className="w-full px-8 md:px-16 pb-16">
               <p className="mb-4 text-sm font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500">
-                Featured Works
+                Showreel
               </p>
-              <FeaturedWorks />
               <SwissVideoBlock />
             </div>
 

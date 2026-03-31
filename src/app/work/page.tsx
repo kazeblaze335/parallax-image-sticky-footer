@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTransitionRouter } from "next-view-transitions";
 import { triggerPaperPushTransition } from "@/utils/animations";
-import DistortedImage from "@/components/webgl/DistortedImage";
 
 import Navbar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import FilmGrain from "@/components/ui/FilmGrain";
 import StickyHeroReveal from "@/components/sections/StickyHeroReveal";
+import SingletonGlitch from "@/components/webgl/SingletonGlitch";
+// 1. Import the FeaturedWorks component
+import FeaturedWorks from "@/components/sections/FeaturedWorks";
 
 const PROJECTS = [
   {
@@ -81,8 +83,10 @@ const PROJECTS = [
 export default function WorkGallery() {
   const [footerHeight, setFooterHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement>(null);
-  const router = useTransitionRouter();
 
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const router = useTransitionRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleProjectClick = (e: React.MouseEvent, slug: string) => {
@@ -98,16 +102,13 @@ export default function WorkGallery() {
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        setFooterHeight(entry.contentRect.height);
-      }
+      for (let entry of entries) setFooterHeight(entry.contentRect.height);
     });
     if (footerRef.current) resizeObserver.observe(footerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
 
   const isCinematicMode = hoveredIndex !== null;
-  const activeProjectSrc = isCinematicMode ? PROJECTS[hoveredIndex].src : null;
 
   return (
     <>
@@ -115,12 +116,11 @@ export default function WorkGallery() {
       <main className="relative min-h-screen text-zinc-900 dark:text-zinc-100 overflow-clip">
         <Navbar />
 
-        {/* THE SINGLETON WEBGL INJECTION */}
-        {/* We only render ONE WebGL element for the entire page to save memory. 
-            It sits dead-center in the GlobalCanvas. */}
-        {activeProjectSrc && (
-          <DistortedImage src={activeProjectSrc} active={true} />
-        )}
+        <SingletonGlitch
+          projects={PROJECTS}
+          activeIndex={hoveredIndex}
+          itemRefs={itemRefs}
+        />
 
         <div
           className="relative z-10"
@@ -134,12 +134,22 @@ export default function WorkGallery() {
 
           <div
             className={`relative z-10 pt-24 pb-32 transition-colors duration-1000 shadow-[0_-20px_50px_rgba(0,0,0,0.3)]
-              ${isCinematicMode ? "bg-zinc-100/10 dark:bg-zinc-950/20 backdrop-blur-md" : "bg-zinc-100 dark:bg-zinc-950"}
+              ${isCinematicMode ? "bg-zinc-100/40 dark:bg-zinc-950/40 backdrop-blur-sm" : "bg-zinc-100 dark:bg-zinc-950"}
             `}
           >
+            {/* 2. Inject the Featured Works Section */}
+            <div className="px-6 md:px-12 max-w-[1800px] mx-auto mb-32 relative z-20">
+              <p className="mb-12 text-sm font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400">
+                Featured Works
+              </p>
+              <FeaturedWorks />
+            </div>
+
+            {/* 3. The WebGL Project Archive Grid */}
             <div className="px-6 md:px-12 max-w-[1800px] mx-auto">
-              {/* THE HAUTE PROTOTYPE GRID */}
-              {/* Dense 2-col mobile, 3-col tablet, 4-col desktop layout with strict borders */}
+              <p className="mb-12 text-sm font-bold tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400">
+                Project Archive
+              </p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-16 md:gap-x-8 md:gap-y-24">
                 {PROJECTS.map((project, index) => {
                   const isHovered = hoveredIndex === index;
@@ -155,21 +165,23 @@ export default function WorkGallery() {
                       <a
                         href={`/work/${project.slug}`}
                         onClick={(e) => handleProjectClick(e, project.slug)}
-                        className={`w-full cursor-pointer transition-opacity duration-700 ${isOtherHovered ? "opacity-10" : "opacity-100"}`}
+                        className={`w-full cursor-none transition-all duration-700 ${isOtherHovered ? "opacity-40 blur-[2px]" : "opacity-100 blur-0"}`}
                       >
-                        {/* Smaller, stark 3:4 aspect ratio thumbnails */}
                         <div
+                          ref={(el) => {
+                            itemRefs.current[index] = el;
+                          }}
                           className={`relative w-full aspect-[3/4] overflow-hidden bg-zinc-200 dark:bg-zinc-900 mb-4 transition-transform duration-700 ${isHovered ? "scale-[0.98]" : "scale-100"}`}
                         >
                           <Image
                             src={project.src}
                             alt={project.name}
                             fill
-                            className={`object-cover transition-all duration-700 grayscale group-hover:grayscale-0 ${isHovered ? "opacity-0" : "opacity-100"}`}
+                            sizes="(max-width: 768px) 50vw, 25vw"
+                            className={`object-cover transition-opacity duration-150 ${isHovered ? "opacity-0" : "opacity-100 grayscale"}`}
                           />
                         </div>
 
-                        {/* Minimalist, monospaced metadata */}
                         <div className="flex justify-between items-start border-t border-zinc-200 dark:border-zinc-800 pt-3">
                           <div className="flex flex-col gap-1">
                             <span className="text-[9px] font-bold tracking-[0.3em] uppercase text-zinc-400">

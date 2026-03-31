@@ -1,94 +1,187 @@
 "use client";
 
-import { useRef, useState, Suspense } from "react";
-import { useFrame } from "@react-three/fiber";
-import { useTexture, MeshDistortMaterial } from "@react-three/drei";
-import { webglTunnel } from "@/providers/TunnelProvider";
+import { useRef, useEffect, Suspense, useMemo } from "react";
 import * as THREE from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
+import { tunnel } from "@/providers/TunnelProvider";
 
-// =======================================================
-// 1. THE WEBGL COMPONENT (Runs inside the Canvas)
-// =======================================================
-function DistortedPlane({
-  src,
-  isHovered,
-}: {
-  src: string;
-  isHovered: boolean;
-}) {
-  // Load the image into a WebGL texture
-  const texture = useTexture(src);
-  const materialRef = useRef<any>(null);
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
 
-  // useFrame runs at 60fps to handle the physics animations
-  useFrame(() => {
-    if (materialRef.current) {
-      // Smoothly interpolate the distortion value based on hover state
-      const targetDistortion = isHovered ? 0.6 : 0.0;
-      materialRef.current.distort = THREE.MathUtils.lerp(
-        materialRef.current.distort,
-        targetDistortion,
-        0.08, // Easing speed: lower is smoother/more liquid
-      );
+const fragmentShader = `
+  varying vec2 vUv;
+  uniform sampler2D uTexture;
+  uniform float uHoverState;
+  uniform float uTime;
+  uniform vec2 uMouse;
+
+  void main() {
+    vec2 p = vUv;
+    float dist = distance(p, uMouse);
+    
+    // Calculate a fluid ripple wave moving outward
+    float ripple = sin(dist * 30.0 - uTime * 5.0) * 0.015;
+    
+    // Dampen the effect further away from the mouse
+    float dampen = smoothstep(0.4, 0.0, dist) * uHoverState;
+    
+    // Push the UV coordinates along the wave vector
+    vec2 dir = p - uMouse;
+    if (length(dir) > 0.0) {
+      dir = normalize(dir);
     }
+    
+    vec2 distortedUv = p + dir * ripple * dampen;
+
+    gl_FragColor = texture2D(uTexture, distortedUv);
+  }
+`;
+
+// --- THE INNER WEBGL MESH ---
+function WebGLImageMesh({
+  domRef,
+  textureUrl,
+  hoverRef,
+  mouseRef,
+}: {
+  domRef: React.RefObject<HTMLDivElement | null>;
+  textureUrl: string;
+  hoverRef: React.MutableRefObject<boolean>;
+  mouseRef: React.MutableRefObject<{ x: number; y: number }>;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+  const texture = useTexture(textureUrl);
+
+  useEffect(() => {
+    if (texture) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.needsUpdate = true;
+    }
+  }, [texture]);
+
+  const uniforms = useMemo(
+    () => ({
+      uTexture: { value: texture },
+      uHoverState: { value: 0 },
+      uTime: { value: 0 },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    }),
+    [texture],
+  );
+
+  const { size, viewport } = useThree();
+
+  useFrame((state, delta) => {
+    if (!domRef.current || !meshRef.current || !materialRef.current) return;
+
+    // Direct uniform mutations (Bypassing React rendering entirely)
+    materialRef.current.uniforms.uTime.value += delta;
+
+    // 1. Read silently from the refs instead of React State!
+    const targetHover = hoverRef.current ? 1 : 0;
+    materialRef.current.uniforms.uHoverState.value +=
+      (targetHover - materialRef.current.uniforms.uHoverState.value) * 0.1;
+
+    materialRef.current.uniforms.uMouse.value.x +=
+      (mouseRef.current.x - materialRef.current.uniforms.uMouse.value.x) * 0.1;
+    materialRef.current.uniforms.uMouse.value.y +=
+      (mouseRef.current.y - materialRef.current.uniforms.uMouse.value.y) * 0.1;
+
+    // DOM-to-WebGL Syncing Math
+    const rect = domRef.current.getBoundingClientRect();
+    const width = (rect.width / size.width) * viewport.width;
+    const height = (rect.height / size.height) * viewport.height;
+    const x =
+      (rect.left / size.width) * viewport.width -
+      viewport.width / 2 +
+      width / 2;
+    const y =
+      -(rect.top / size.height) * viewport.height +
+      viewport.height / 2 -
+      height / 2;
+
+    meshRef.current.scale.set(width, height, 1);
+    meshRef.current.position.set(x, y, 0);
   });
 
   return (
-    // Pushed back slightly on the Z-axis, scaled to a 4:3 aspect ratio
-    <mesh position={[0, 0, -2]} scale={[6, 4.5, 1]}>
-      {/* 64x64 segments gives the material enough vertices to bend smoothly */}
-      <planeGeometry args={[1, 1, 64, 64]} />
-      <MeshDistortMaterial
+    <mesh ref={meshRef}>
+      <planeGeometry args={[1, 1, 32, 32]} />
+      <shaderMaterial
         ref={materialRef}
-        map={texture}
-        speed={2.5} // How fast the liquid boils
-        radius={1} // How wide the distortion spreads
-        toneMapped={false} // Prevents the image colors from washing out
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+        transparent={true}
+        toneMapped={false}
       />
     </mesh>
   );
 }
 
-// =======================================================
-// 2. THE DOM WRAPPER (Runs in your standard Next.js pages)
-// =======================================================
+// --- THE OUTER DOM COMPONENT ---
 interface DistortedImageProps {
   src: string;
-  active?: boolean; // Allows a parent element (like a custom cursor) to force the distortion
+  alt: string;
+  className?: string;
 }
 
 export default function DistortedImage({
   src,
-  active = false,
+  alt,
+  className = "",
 }: DistortedImageProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const domRef = useRef<HTMLDivElement>(null);
 
-  // The image should distort if the user is directly hovering over its DOM node,
-  // OR if a parent component explicitly tells it to be active.
-  const isDistorting = active || isHovered;
+  // 2. THE FIX: Silent refs instead of noisy state variables
+  const hoverRef = useRef(false);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (domRef.current) {
+      const rect = domRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = 1.0 - (e.clientY - rect.top) / rect.height;
+
+      // Update the silent ref! (No React re-renders triggered)
+      mouseRef.current = { x, y };
+    }
+  };
 
   return (
     <>
-      {/* This is an invisible DOM layer that catches the mouse. 
-        It sits exactly where your image *would* be in the HTML.
-      */}
       <div
-        className="absolute inset-0 z-20 cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      />
+        ref={domRef}
+        onMouseEnter={() => {
+          hoverRef.current = true;
+        }}
+        onMouseLeave={() => {
+          hoverRef.current = false;
+        }}
+        onMouseMove={handleMouseMove}
+        className={`relative w-full h-full opacity-0 ${className}`}
+      >
+        <span className="sr-only">{alt}</span>
+      </div>
 
-      {/* The Teleporter: This sends the 3D logic out of this standard page
-        and injects it directly into the GlobalCanvas running in layout.tsx!
-      */}
-      <webglTunnel.In>
+      <tunnel.In>
         <Suspense fallback={null}>
-          {/* We only mount and render the 3D plane if it is actively needed to save GPU memory */}
-          {isDistorting && (
-            <DistortedPlane src={src} isHovered={isDistorting} />
-          )}
+          <WebGLImageMesh
+            domRef={domRef}
+            textureUrl={src}
+            hoverRef={hoverRef}
+            mouseRef={mouseRef}
+          />
         </Suspense>
-      </webglTunnel.In>
+      </tunnel.In>
     </>
   );
 }

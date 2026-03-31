@@ -2,27 +2,24 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Preload } from "@react-three/drei";
-import { webglTunnel } from "@/providers/TunnelProvider";
+import { tunnel } from "@/providers/TunnelProvider";
 
 export default function GlobalCanvas() {
   return (
-    // Fixed to the viewport, z-index -1 keeps it behind your DOM layout
-    <div className="fixed inset-0 z-[-1] pointer-events-none bg-transparent isolate transform-gpu">
+    <div className="fixed inset-0 z-[40] pointer-events-none">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        dpr={[1, 2]}
+        // FIX: Force the actual <canvas> element to ignore all mouse events!
+        style={{ pointerEvents: "none" }}
+        dpr={[1, 1.5]}
         gl={{
-          alpha: true,
-          antialias: true,
+          antialias: false,
           powerPreference: "high-performance",
+          alpha: true,
         }}
+        camera={{ position: [0, 0, 5], fov: 75 }}
+        frameloop="always"
       >
-        <ambientLight intensity={1} />
-
-        {/* THE EXIT PORTAL: 3D elements injected from other pages render here! */}
-        <webglTunnel.Out />
-
-        {/* Preload ensures assets aren't dumped from memory on route change */}
+        <tunnel.Out />
         <Preload all />
       </Canvas>
     </div>
