@@ -14,42 +14,42 @@ const SHOWREEL_DATA = [
     id: "01",
     title: "Creative Direction",
     subtitle: "Guiding the vision.",
-    videoSrc: "/videos/showcase-reel.mp4",
+    videoSrc: "/videos/showcase-reel-1.mp4",
     fallbackImg: "/images/project-1.jpg",
   },
   {
     id: "02",
     title: "Interactive Design",
     subtitle: "Tactile web experiences.",
-    videoSrc: "/videos/showcase-reel.mp4",
+    videoSrc: "/videos/showcase-reel-2.mp4",
     fallbackImg: "/images/project-2.jpg",
   },
   {
     id: "03",
     title: "Hardware WebGL",
     subtitle: "Pushing the pixels.",
-    videoSrc: "/videos/showcase-reel.mp4",
+    videoSrc: "/videos/showcase-reel-3.mp4",
     fallbackImg: "/images/project-3.jpg",
   },
   {
     id: "04",
     title: "Motion & 3D",
     subtitle: "Kinetic storytelling.",
-    videoSrc: "/videos/showcase-reel.mp4", // Assumes you have these mapped in your public folder
+    videoSrc: "/videos/showcase-reel-4.mp4", // Assumes you have these mapped in your public folder
     fallbackImg: "/images/project-4.jpg",
   },
   {
     id: "05",
     title: "Product Architecture",
     subtitle: "Systems that scale.",
-    videoSrc: "/videos/showcase-reel.mp4",
+    videoSrc: "/videos/showcase-reel-5.mp4",
     fallbackImg: "/images/project-5.jpg",
   },
   {
     id: "06",
     title: "Creative Engineering",
     subtitle: "Code as a medium.",
-    videoSrc: "/videos/showcase-reel.mp4",
+    videoSrc: "/videos/showcase-reel-6.mp4",
     fallbackImg: "/images/project-6.jpg",
   },
 ];
@@ -65,13 +65,14 @@ const ParallaxItem = ({
   scrollYProgress: any;
   total: number;
 }) => {
-  // Dynamically calculate the scroll window for this specific item
   const start = index / total;
   const end = (index + 1) / total;
 
-  // 1. The Clip-Path Expansion
-  const clipX = useTransform(scrollYProgress, [start, end], [25, 0]);
-  const clipY = useTransform(scrollYProgress, [start, end], [40, 0]);
+  // 1. The Razor Line Clip-Path Expansion
+  // clipY starts at 49.8% (cutting from top and bottom) leaving a 0.4% vertical sliver
+  // clipX starts at 15% (cutting from left and right) to give the line some horizontal breathing room
+  const clipX = useTransform(scrollYProgress, [start, end], [15, 0]);
+  const clipY = useTransform(scrollYProgress, [start, end], [49.8, 0]);
   const clipPath = useMotionTemplate`inset(${clipY}% ${clipX}% ${clipY}% ${clipX}%)`;
 
   // 2. The Video Scale
@@ -149,7 +150,8 @@ const ParallaxItem = ({
 export default function InfiniteParallaxHero() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // THE FIX: Increased from 400vh to 700vh to comfortably fit 6 scrolling items!
+  // THE EXTENDED SCROLL: Increased to 1200vh
+  // 1200vh / 6 items = a massive 200vh of physical scroll distance per video transition!
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -158,7 +160,7 @@ export default function InfiniteParallaxHero() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full h-[700vh] bg-zinc-100 dark:bg-zinc-950"
+      className="relative w-full h-[1200vh] bg-zinc-100 dark:bg-zinc-950"
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden bg-zinc-950">
         {SHOWREEL_DATA.map((item, index) => (
