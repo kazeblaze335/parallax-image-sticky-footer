@@ -11,15 +11,12 @@ const neueMontreal = localFont({
 export default function Footer() {
   return (
     <footer className="h-screen w-full flex flex-col justify-between overflow-hidden bg-zinc-200 dark:bg-zinc-900 transition-colors duration-500 relative">
-      {/* TOP FLANKS: Contact & Studio Info 
-        We use absolute positioning here to push them to the absolute edges 
-        of the screen, freeing up the entire center for the typography.
-      */}
-      <div className="absolute top-32 left-8 md:left-16 font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 z-10">
+      {/* =========================================
+          TOP: Brutalist Flush Info
+          ========================================= */}
+      {/* THE FIX: Replaced absolute positioning with standard flex flow and minimal pt-8 to lock it flush to the ceiling */}
+      <div className="w-full px-6 md:px-12 pt-8 flex justify-between items-start font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 relative z-10">
         <p>This is SOJU studio.</p>
-      </div>
-
-      <div className="absolute top-32 right-8 md:right-16 text-right font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 z-10">
         <Link
           href="mailto:hello@soju.studio"
           className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
@@ -28,10 +25,9 @@ export default function Footer() {
         </Link>
       </div>
 
-      {/* CENTER: The Massive SOJU Graphic 
-        By putting this in a flex-grow container, it naturally centers itself
-        perfectly in the massive 100vh void.
-      */}
+      {/* =========================================
+          CENTER: The Massive SOJU Graphic
+          ========================================= */}
       <div className="flex-grow flex items-center justify-center w-full">
         <div
           className={`text-[25vw] leading-[0.75] tracking-tighter uppercase text-zinc-900 dark:text-zinc-100 transition-colors duration-500 ${neueMontreal.className}`}
@@ -40,8 +36,10 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* BOTTOM: Copyright & Socials */}
-      <div className="w-full px-8 md:px-16 pb-12 flex justify-between items-end font-mono text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500 z-10 relative">
+      {/* =========================================
+          BOTTOM: Copyright & Socials
+          ========================================= */}
+      <div className="w-full px-6 md:px-12 pb-8 flex justify-between items-end font-mono text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-zinc-500 dark:text-zinc-400 transition-colors duration-500 relative z-10">
         <p>© {new Date().getFullYear()}</p>
         <div className="flex gap-6">
           <Link
